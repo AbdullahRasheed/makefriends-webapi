@@ -5,5 +5,5 @@ Web API for a personal microservice learning project
 
 ## Client-Side Graphical Interface Architecture
 
-![Client-Side AADL Diagram](https://raw.githubusercontent.com/AbdullahRasheed/makefriends-webapi/main/client_aadl_diagram.PNG =2200x490)
+![Client-Side AADL Diagram](https://raw.githubusercontent.com/AbdullahRasheed/makefriends-webapi/main/client_aadl_diagram.PNG)
 Diagram made with AADL
