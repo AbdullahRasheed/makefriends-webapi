@@ -1,13 +1,18 @@
-﻿namespace makefriends_web_api.Data
+﻿using MongoDB.Bson.Serialization.Attributes;
+
+namespace makefriends_web_api.Data
 {
     public class User
     {
 
-        public string Username { get; private set; } = string.Empty;
+        [BsonId]
+        public string? Id { get; set; }
 
-        public byte[] PasswordHash { get; private set; } = new byte[0];
+        public string Username { get; set; } = string.Empty;
 
-        public byte[] PasswordSalt { get; private set; } = new byte[0];
+        public byte[] PasswordHash { get; set; } = new byte[0];
+
+        public byte[] PasswordSalt { get; set; } = new byte[0];
 
         public User(string username, byte[] passwordHash, byte[] passwordSalt)
         {
