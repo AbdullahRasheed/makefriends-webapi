@@ -3,6 +3,7 @@ using makefriends_web_api.Util;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.Collections;
+using makefriends_web_api.Database;
 
 namespace makefriends_web_api.Controllers
 {
@@ -11,7 +12,9 @@ namespace makefriends_web_api.Controllers
     public class UserController : ControllerBase
     {
 
-        private static readonly Dictionary<string, User> _users = new();
+        private readonly UserService _userService;
+
+        public UserController(UserService userService) => _userService = userService;
 
         [HttpPost("register")]
         public async Task<ActionResult<User>> CreateUser(LoginCredentials credentials)
@@ -19,9 +22,9 @@ namespace makefriends_web_api.Controllers
             SHA512StringFunction func = new SHA512StringFunction();
             byte[] hash = func.GetHash(credentials.Password, out byte[] salt);
 
-            User user = new(credentials.Username, hash, salt);
+            var user = new User(credentials.Username, hash, salt);
 
-            _users.Add(user.Username, user);
+            await _userService.InsertAsync(user);
 
             return Ok(user);
         }
@@ -29,7 +32,9 @@ namespace makefriends_web_api.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<string>> Login(LoginCredentials credentials)
         {
-            if (_users.TryGetValue(credentials.Username, out User user))
+            var user = await _userService.FindByUsernameAsync(credentials.Username);
+
+            if (user is not null)
             {
                 SHA512StringFunction func = new SHA512StringFunction();
 

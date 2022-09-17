@@ -18,6 +18,8 @@ namespace makefriends_web_api.Database
 
         public async Task<User?> FindAsync(string id) => await _userCollection.Find(user => id == user.Id).FirstOrDefaultAsync();
 
+        public async Task<User?> FindByUsernameAsync(string username) => await _userCollection.Find(user => username == user.Username).FirstOrDefaultAsync();
+
         public async Task InsertAsync(User user) => await _userCollection.InsertOneAsync(user);
 
         public async Task ReplaceAsync(string id, User user) => await _userCollection.ReplaceOneAsync(user => id == user.Id, user);
