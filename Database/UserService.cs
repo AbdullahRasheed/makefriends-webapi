@@ -16,14 +16,14 @@ namespace makefriends_web_api.Database
             _userCollection = mongoDatabase.GetCollection<User>(userDatabaseSettings.Value.LoginCollectionName);
         }
 
-        public async Task<User?> FindAsync(string id) => await _userCollection.Find(user => id == user.Id).FirstOrDefaultAsync();
+        public async Task<User?> FindAsync(string id) => await _userCollection.Find(user => id.ToString() == user.Id.ToString()).FirstOrDefaultAsync();
 
         public async Task<User?> FindByUsernameAsync(string username) => await _userCollection.Find(user => username == user.Username).FirstOrDefaultAsync();
 
         public async Task InsertAsync(User user) => await _userCollection.InsertOneAsync(user);
 
-        public async Task ReplaceAsync(string id, User user) => await _userCollection.ReplaceOneAsync(user => id == user.Id, user);
+        public async Task ReplaceAsync(string id, User user) => await _userCollection.ReplaceOneAsync(user => id.ToString() == user.Id.ToString(), user);
 
-        public async Task DeleteAsync(string id) => await _userCollection.DeleteOneAsync(user => id == user.Id);
+        public async Task DeleteAsync(string id) => await _userCollection.DeleteOneAsync(user => id.ToString() == user.Id.ToString());
     }
 }

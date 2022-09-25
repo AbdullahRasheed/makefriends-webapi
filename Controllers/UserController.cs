@@ -17,16 +17,23 @@ namespace makefriends_web_api.Controllers
         public UserController(UserService userService) => _userService = userService;
 
         [HttpPost("register")]
-        public async Task<ActionResult<User>> CreateUser(LoginCredentials credentials)
+        public async Task<ActionResult<User>> CreateUser([FromBody] LoginCredentials credentials)
         {
             SHA512StringFunction func = new SHA512StringFunction();
             byte[] hash = func.GetHash(credentials.Password, out byte[] salt);
+
+            var response = await _userService.FindByUsernameAsync(credentials.Username);
+
+            if (response is not null)
+            {
+                return BadRequest("Username already exists");
+            }
 
             var user = new User(credentials.Username, hash, salt);
 
             await _userService.InsertAsync(user);
 
-            return Ok(user);
+            return Ok("Successfully created account");
         }
 
         [HttpPost("login")]
@@ -39,10 +46,9 @@ namespace makefriends_web_api.Controllers
                 SHA512StringFunction func = new SHA512StringFunction();
 
                 if (func.Verify(credentials.Password, user.PasswordHash, user.PasswordSalt)) return Ok("Success! <token>");
-                return BadRequest("Wrong password");
             }
 
-            return BadRequest("Username not found");
+            return BadRequest("Incorrect username or password");
         }
 
 
