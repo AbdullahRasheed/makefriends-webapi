@@ -1,4 +1,5 @@
 using makefriends_web_api.Database;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 var CorsPolicy = "_allowOrigins";
@@ -7,6 +8,10 @@ var CorsPolicy = "_allowOrigins";
 
 builder.Services.Configure<UserDatabaseSettings>(
     builder.Configuration.GetSection("UserDatabase")
+);
+
+builder.Services.Configure<UploadDatabaseSettings>(
+    builder.Configuration.GetSection("UploadDatabase")
 );
 
 builder.Services.AddCors(options =>
@@ -19,8 +24,15 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddSingleton<UserService>();
+builder.Services.AddSingleton<AvatarService>();
 
 builder.Services.AddControllers();
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
+{
+    options.ExpireTimeSpan = TimeSpan.FromDays(1);
+    options.SlidingExpiration = true;
+});
 
 var app = builder.Build();
 
@@ -30,6 +42,12 @@ app.UseHttpsRedirection();
 
 app.UseCors(CorsPolicy);
 
+app.UseCookiePolicy(new CookiePolicyOptions
+{
+    MinimumSameSitePolicy = SameSiteMode.Strict
+});
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
